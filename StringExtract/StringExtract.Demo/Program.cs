@@ -22,13 +22,13 @@ namespace StringExtract.Demo
         public static void Main(string[] args)
         {
             // Creates a new extractor
-            var extractor = new Extractor();
+            var extractor = new Extractor(5);
 
             // Extracts the strings
-            extractor.Extract(DUMMY_PATH, 3);
+            //extractor.Extract(DUMMY_PATH);
 
             // Prints out the output
-            foreach (var value in extractor.Strings)
+            foreach (var value in extractor.Extract(DUMMY_PATH))
                 Console.WriteLine(value);
 
             // Await input before exit

@@ -11,8 +11,17 @@ namespace StringExtract.Library
     /// </summary>
     public class Extractor
     {
-        // Privates
-        private int minimumCharacters = 3;
+        // Private members
+        private int minimumCharacters;
+        public int MinimumCharacters
+        {
+            get => minimumCharacters;
+            set
+            {
+                if (value < 3) value = 3;
+                minimumCharacters = value;
+            }
+        }
 
         // List of the extracted strings
         public List<string> Strings;
@@ -24,21 +33,22 @@ namespace StringExtract.Library
         {
             Strings = new List<string>();
         }
+        public Extractor(int minimumCharacters)
+        {
+            MinimumCharacters = minimumCharacters;
+            Strings = new List<string>();
+        }
 
         /// <summary>
         /// The main method that extracts the strings
         /// </summary>
-        public void Extract(string filePath, int minimumCharacters)
+        public IEnumerable<string> Extract(string filePath)
         {
-            this.minimumCharacters = minimumCharacters;
-
             if (File.Exists(filePath))
             {
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
-                    ParseStream(stream);
-
-                    stream.Flush();
+                    return ParseStream(stream);
                 }
             }
             else
@@ -50,7 +60,7 @@ namespace StringExtract.Library
         /// <summary>
         /// Parses the input stream
         /// </summary>
-        public void ParseStream(FileStream stream)
+        private IEnumerable<string> ParseStream(FileStream stream)
         {
             const int MAX_BUFFER_SIZE = 32768;
 
@@ -62,17 +72,18 @@ namespace StringExtract.Library
                 bufferSize = stream.Read(buffer, 0, MAX_BUFFER_SIZE);
                 if (bufferSize > 0)
                 {
-                    ProcessBuffer(buffer, bufferSize);
+                    return ProcessBuffer(buffer, bufferSize);
                 }
 
             } while (bufferSize == MAX_BUFFER_SIZE);
+
+            return new List<string>();
         }
 
         /// <summary>
         /// Processes a buffer
         /// </summary>
-        /// <param name="buffer"></param>
-        public void ProcessBuffer(byte[] buffer, int bufferSize)
+        private IEnumerable<string> ProcessBuffer(byte[] buffer, int bufferSize)
         {
             int offset = 0;
 
@@ -85,7 +96,7 @@ namespace StringExtract.Library
 
                 if (stringSize >= minimumCharacters)
                 {
-                    Strings.Add(outputString);
+                    yield return outputString;
                     offset += stringDiskSpace;
                 }
                 else offset++;
@@ -96,47 +107,54 @@ namespace StringExtract.Library
         /// Attemps to identify a string at a specific offset
         /// </summary>
         /// <returns>Returns the string disk space allocated to the string.</returns>
-        public int ProcessString(byte[] buffer, int bufferSize, int offset, ref int stringSize, ref string outputString)
+        private int ProcessString(byte[] buffer, int bufferSize, int offset, ref int stringSize, ref string outputString)
         {
             int i = 0;
             StringBuilder builder = new StringBuilder();
 
             // Try to parse as ascii or unicode
-            if (Globals.isAscii[buffer[offset]])
+            try
             {
-                // Consider unicode case
-                if (buffer[offset + 1] == 0x00) // No null dereference by assumptions
+                if (Globals.isAscii[buffer[offset]])
                 {
-                    // Parse as unicode
-                    while (offset + i + 1 < bufferSize && i / 2 < Globals.MaxStringSize && Globals.isAscii[buffer[offset + i]] &&
-                           buffer[offset + i + 1] == 0 && i / 2 + 1 < Globals.MaxStringSize)
+                    // Consider unicode case
+                    if (buffer[offset + 1] == 0x00) // No null dereference by assumptions
                     {
-                        // Copy this character
-                        builder.Append((char)buffer[offset + i]);
+                        // Parse as unicode
+                        while (offset + i + 1 < bufferSize && i / 2 < Globals.MaxStringSize &&
+                               Globals.isAscii[buffer[offset + i]] &&
+                               buffer[offset + i + 1] == 0 && i / 2 + 1 < Globals.MaxStringSize)
+                        {
+                            builder.Append((char) buffer[offset + i]);
+                            i += 2;
+                        }
 
-                        i += 2;
+                        outputString = builder.ToString();
+                        stringSize = i / 2;
+                        return i;
                     }
+                    else
+                    {
+                        // Parse as ASCII
+                        i = offset;
+                        // As longs as the next byte is a valid ASCII char
+                        while (i < bufferSize && Globals.isAscii[buffer[i]])
+                            i++;
+                        stringSize = i - offset;
+                        if (stringSize > Globals.MaxStringSize)
+                            stringSize = Globals.MaxStringSize;
 
-                    outputString = builder.ToString();
-                    stringSize = i / 2;
-                    return i;
-                }
-                else
-                {
-                    // Parse as ascii
-                    i = offset;
-                    while (i < bufferSize && Globals.isAscii[buffer[i]])
-                        i++;
-                    stringSize = i - offset;
-                    if (stringSize > Globals.MaxStringSize)
-                        stringSize = Globals.MaxStringSize;
-
-                    // Copy this string to the output
-                    outputString = Encoding.ASCII.GetString(buffer, offset, stringSize);
-                    return stringSize;
+                        // Copy this string to the output
+                        outputString = Encoding.ASCII.GetString(buffer, offset, stringSize);
+                        return stringSize;
+                    }
                 }
             }
-
+            catch {
+                stringSize = 0;
+                return 0;
+            }
+            // Nothing found ...
             stringSize = 0;
             return 0;
         }
