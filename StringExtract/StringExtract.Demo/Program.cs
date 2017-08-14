@@ -25,7 +25,7 @@ namespace StringExtract.Demo
             var extractor = new Extractor();
 
             // Extracts the strings
-            extractor.Extract(DUMMY_PATH);
+            extractor.Extract(DUMMY_PATH, 3);
 
             // Prints out the output
             foreach (var value in extractor.Strings)
