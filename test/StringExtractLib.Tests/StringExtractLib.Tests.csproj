@@ -18,4 +18,10 @@
     <ProjectReference Include="..\..\src\StringExtractLib\StringExtractLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="DummyFile.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

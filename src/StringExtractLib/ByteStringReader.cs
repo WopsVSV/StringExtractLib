@@ -1,14 +1,17 @@
-﻿using System;
+﻿using StringExtractLib.Options;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StringExtractLib
 {
-    internal class ByteStringReader : IStringReader
+    public class ByteStringReader // : IStringReader
     {
         public IEnumerable<string> ReadAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> ReadAll(StringReaderOptions options)
         {
             throw new NotImplementedException();
         }

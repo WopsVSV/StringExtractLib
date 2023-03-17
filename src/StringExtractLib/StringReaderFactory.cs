@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StringExtractLib
 {
     public static class StringReaderFactory
     {
-        public static IStringReader FromFile(string path)
+        public static FileStringReader FromFile(string path)
         {
-            return new FileStringReader();
+            return new FileStringReader(path);
         }
 
-        public static IStringReader FromMemory(IntPtr memoryPtr, int size)
+        public static MemoryStringReader FromMemory(IntPtr memoryPtr, int size)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -26,7 +22,7 @@ namespace StringExtractLib
             }
         }
 
-        public static IStringReader FromBytes(byte[] bytes)
+        public static ByteStringReader FromBytes(byte[] bytes)
         {
             return new ByteStringReader();
         }
