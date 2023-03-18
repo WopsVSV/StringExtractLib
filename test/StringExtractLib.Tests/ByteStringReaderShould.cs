@@ -1,6 +1,4 @@
 ﻿using NUnit.Framework;
-using StringExtractLib.Options;
-using System;
 using System.Linq;
 
 namespace StringExtractLib.Tests

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StringExtractLib.Options
+namespace StringExtractLib
 {
     public class StringReaderOptions
     {

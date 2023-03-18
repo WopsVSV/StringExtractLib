@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using StringExtractLib.Options;
 using System.Linq;
 
 namespace StringExtractLib.Tests
@@ -118,7 +117,7 @@ namespace StringExtractLib.Tests
         {
             var reader = new FileStringReader(
               DummyFile,
-              new Options.FileStringReaderOptions(minimumSize: minimumSize));
+              new FileStringReaderOptions(minimumSize: minimumSize));
 
             var strings = reader.ReadAll();
 

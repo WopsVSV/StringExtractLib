@@ -1,13 +1,11 @@
-﻿using StringExtractLib.Options;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace StringExtractLib
 {
     public interface IStringReader
     {
-        IEnumerable<string> ReadAll();
+        IList<string> ReadAll();
 
-        IEnumerable<string> ReadAll(StringReaderOptions options);
+        IList<string> ReadAll(StringReaderOptions options);
     }
 }

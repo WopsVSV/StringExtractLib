@@ -1,5 +1,4 @@
-﻿using StringExtractLib.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace StringExtractLib
@@ -22,19 +21,19 @@ namespace StringExtractLib
             Source = source;
         }
 
-        public IEnumerable<string> ReadAll()
+        public IList<string> ReadAll()
         {
             return ReadAll(Options);
         }
 
-        public IEnumerable<string> ReadAll(StringReaderOptions options)
+        public IList<string> ReadAll(StringReaderOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(StringReaderOptions), "StringReaderOptions cannot be null.");
 
             var processor = new BufferProcessor(options);
 
-            return processor.ProcessBuffer(Source, Source.Length);
+            return processor.ProcessBuffer(Source, Source.Length).Strings;
         }
     }
 }

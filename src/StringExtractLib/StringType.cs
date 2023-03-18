@@ -1,4 +1,4 @@
-﻿namespace StringExtractLib.Options
+﻿namespace StringExtractLib
 {
     public enum StringType
     {

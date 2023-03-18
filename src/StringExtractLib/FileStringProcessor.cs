@@ -1,7 +1,7 @@
-﻿using StringExtractLib.Options;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Linq;
 
 namespace StringExtractLib
 {
@@ -15,10 +15,10 @@ namespace StringExtractLib
         {
             _path = path;
             _options = options;
-            _bufferProcessor = new BufferProcessor(options);
+            _bufferProcessor = new BufferProcessor(options, !options.ChunkSize.HasValue);
         }
 
-        internal IEnumerable<string> ReadAll()
+        internal IList<string> ReadAll()
         {
             using (var stream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.None))
             {
@@ -26,7 +26,7 @@ namespace StringExtractLib
             }
         }
 
-        private IEnumerable<string> ParseStream(FileStream stream)
+        private IList<string> ParseStream(FileStream stream)
         {
             if (_options.ChunkSize.HasValue)
             {
@@ -43,29 +43,38 @@ namespace StringExtractLib
             }
         }
 
-        private IEnumerable<string> ProcessStream(FileStream stream)
+        private IList<string> ProcessStream(FileStream stream)
         {
             var length = (int)stream.Length;
             byte[] buffer = new byte[length];
             stream.Read(buffer, 0, length);
 
-            return _bufferProcessor.ProcessBuffer(buffer, length);
+            return _bufferProcessor.ProcessBuffer(buffer, length).Strings;
         }
 
-        private IEnumerable<string> ProcessChunkedStream(FileStream stream, int chunkSize)
+        private IList<string> ProcessChunkedStream(FileStream stream, int chunkSize)
         {
             var strings = new List<string>();
             byte[] buffer = new byte[chunkSize];
             int bufferSize;
 
+            byte[]? chunkRemainder = Array.Empty<byte>();
+
             do
             {
                 bufferSize = stream.Read(buffer, 0, chunkSize);
+
                 if (bufferSize > 0)
                 {
-                    strings.AddRange(_bufferProcessor.ProcessBuffer(buffer, bufferSize));
-                }
+                    var targetArray = chunkRemainder != null && chunkRemainder.Length > 0
+                        ? chunkRemainder.Concat(buffer).ToArray()
+                        : buffer;
 
+                    var processedBufferResult = _bufferProcessor.ProcessBuffer(targetArray, targetArray.Length);
+                    chunkRemainder = processedBufferResult.ChunkRemainder;
+
+                    strings.AddRange(processedBufferResult.Strings);
+                }
             }
             while (bufferSize == chunkSize);
 
