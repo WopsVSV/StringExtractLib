@@ -20,6 +20,16 @@ namespace StringExtractLib.Tests
         }
 
         [Test]
+        public void AssignPropertiesProperly()
+        {
+            var options = new FileStringReaderOptions(3, 16, StringType.Utf16, 2048);
+            var reader = new FileStringReader(DummyFile, options);
+
+            Assert.AreEqual(reader.Options, options);
+            Assert.AreEqual(reader.Path, DummyFile);
+        }
+
+        [Test]
         public void ReadAllStrings()
         {
             var reader = new FileStringReader(DummyFile);

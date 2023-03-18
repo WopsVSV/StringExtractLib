@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringExtractLib", "src\Str
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringExtractLib.Tests", "test\StringExtractLib.Tests\StringExtractLib.Tests.csproj", "{BA42B0F6-34AB-4742-B05D-E2A7CADCF944}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringExtractLib.Memory", "src\StringExtractLib.Memory\StringExtractLib.Memory.csproj", "{B7DE8D91-4CD5-43F4-AB7D-E6BE7726ED7F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BA42B0F6-34AB-4742-B05D-E2A7CADCF944}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA42B0F6-34AB-4742-B05D-E2A7CADCF944}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA42B0F6-34AB-4742-B05D-E2A7CADCF944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7DE8D91-4CD5-43F4-AB7D-E6BE7726ED7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DE8D91-4CD5-43F4-AB7D-E6BE7726ED7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7DE8D91-4CD5-43F4-AB7D-E6BE7726ED7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7DE8D91-4CD5-43F4-AB7D-E6BE7726ED7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,7 @@ namespace StringExtractLib
     public class FileStringReader : IStringReader
     {
         public string Path { get; private set; }
+
         public FileStringReaderOptions Options { get; private set; }
 
         public FileStringReader(string path)

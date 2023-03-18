@@ -1,7 +1,9 @@
 ﻿using StringExtractLib.Options;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
+[assembly: InternalsVisibleTo("StringExtractLib.Memory")]
 namespace StringExtractLib
 {
     internal class BufferProcessor

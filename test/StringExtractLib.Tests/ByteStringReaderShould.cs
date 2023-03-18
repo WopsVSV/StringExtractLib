@@ -29,6 +29,16 @@ namespace StringExtractLib.Tests
         }
 
         [Test]
+        public void AssignPropertiesProperly()
+        {
+            var options = new StringReaderOptions(3, 16, StringType.Utf16);
+            var reader = new ByteStringReader(_source!, options);
+
+            Assert.AreEqual(reader.Options, options);
+            Assert.AreEqual(reader.Source, _source);
+        }
+
+        [Test]
         public void ReadAllStrings()
         {
             var reader = new ByteStringReader(_source!);

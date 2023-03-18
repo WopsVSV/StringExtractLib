@@ -6,13 +6,6 @@ namespace StringExtractLib.Tests
 {
     public class StringReaderOptionsShould
     {
-
-        [SetUp]
-        public void Setup()
-        {
-
-        }
-
         [Test]
         public void GetCreatedWithDefaults()
         {
@@ -23,6 +16,7 @@ namespace StringExtractLib.Tests
             Assert.AreEqual(defaultOptions.SearchedStringType, StringType.Both);
         }
 
+        [Test]
         public void GetCreatedProperlyWithAnyConstructor()
         {
             var defaultOptions = new StringReaderOptions();
@@ -35,15 +29,15 @@ namespace StringExtractLib.Tests
 
             var options2 = new StringReaderOptions(7, 12);
 
-            Assert.AreEqual(options1.MinimumLength, 7);
-            Assert.AreEqual(options1.MaximumLength, 12);
-            Assert.AreEqual(options1.SearchedStringType, defaultOptions.SearchedStringType);
+            Assert.AreEqual(options2.MinimumLength, 7);
+            Assert.AreEqual(options2.MaximumLength, 12);
+            Assert.AreEqual(options2.SearchedStringType, defaultOptions.SearchedStringType);
 
             var options3 = new StringReaderOptions(3, null, StringType.Utf8);
 
-            Assert.AreEqual(options1.MinimumLength, 3);
-            Assert.AreEqual(options1.MaximumLength, null);
-            Assert.AreEqual(options1.SearchedStringType, StringType.Utf8);
+            Assert.AreEqual(options3.MinimumLength, 3);
+            Assert.AreEqual(options3.MaximumLength, null);
+            Assert.AreEqual(options3.SearchedStringType, StringType.Utf8);
         }
 
 

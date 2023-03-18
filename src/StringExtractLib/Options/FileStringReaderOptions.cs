@@ -29,7 +29,7 @@ namespace StringExtractLib.Options
             ChunkSize = 4096;
         }
 
-        public FileStringReaderOptions(StringReaderOptions options) : base()
+        public FileStringReaderOptions(StringReaderOptions options) : this()
         {
             MinimumLength = options.MinimumLength;
             MaximumLength = options.MaximumLength;

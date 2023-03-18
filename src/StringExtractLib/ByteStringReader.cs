@@ -7,6 +7,7 @@ namespace StringExtractLib
     public class ByteStringReader : IStringReader
     {
         public byte[] Source { get; private set; }
+
         public StringReaderOptions Options { get; private set; }
 
         public ByteStringReader(byte[] source)

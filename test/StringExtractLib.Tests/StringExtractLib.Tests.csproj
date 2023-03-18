@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\StringExtractLib.Memory\StringExtractLib.Memory.csproj" />
     <ProjectReference Include="..\..\src\StringExtractLib\StringExtractLib.csproj" />
   </ItemGroup>
 
