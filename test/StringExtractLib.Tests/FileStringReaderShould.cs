@@ -93,6 +93,23 @@ namespace StringExtractLib.Tests
         }
 
         [Test]
+        [TestCase(2538)]
+        [TestCase(2539)]
+        public void ReadStringMidChunk(int chunkSize)
+        {
+            // Offsets 2538 and 2539 are in the middle of the "DUMMYUTF16" string.
+            // We need to ensure that if a string is caught between chunks it isn't lost.
+
+            var reader = new FileStringReader(
+                DummyFile,
+                new FileStringReaderOptions(stringType: StringType.Both, chunkSize: chunkSize));
+
+            var strings = reader.ReadAll();
+
+            Assert.IsTrue(strings.Contains(Utf16String));
+        }
+
+        [Test]
         [TestCase(1)]
         [TestCase(3)]
         [TestCase(5)]
