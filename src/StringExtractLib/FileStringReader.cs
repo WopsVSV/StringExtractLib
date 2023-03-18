@@ -6,30 +6,24 @@ namespace StringExtractLib
 {
     public class FileStringReader : IStringReader
     {
-        private FileStringReaderOptions _options;
-        private string _path;
-
+        public string Path { get; private set; }
         public FileStringReaderOptions Options { get; private set; }
 
         public FileStringReader(string path)
         {
             Options = new FileStringReaderOptions();
-
-            _path = path;
-            _options = Options;
+            Path = path;
         }
 
         public FileStringReader(string path, FileStringReaderOptions options)
         {
             Options = options;
-
-            _path = path;
-            _options = Options;
+            Path = path;
         }
 
         public IEnumerable<string> ReadAll()
         {
-            return ReadAll(_options);
+            return ReadAll(Options);
         }
 
         public IEnumerable<string> ReadAll(StringReaderOptions options)
@@ -41,7 +35,7 @@ namespace StringExtractLib
                 ? fileStringReaderOptions : 
                 new FileStringReaderOptions(options);
 
-            var processor = new FileStringProcessor(_path, fileReaderOptions);
+            var processor = new FileStringProcessor(Path, fileReaderOptions);
             return processor.ReadAll();
         }
     }
