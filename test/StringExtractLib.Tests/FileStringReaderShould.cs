@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.IO;
 using System.Linq;
 
 namespace StringExtractLib.Tests
@@ -92,9 +93,11 @@ namespace StringExtractLib.Tests
         }
 
         [Test]
-        [TestCase(2538)]
-        [TestCase(2539)]
-        public void ReadStringMidChunk(int chunkSize)
+        [TestCase(2538, Utf16String)]
+        [TestCase(2539, Utf16String)]
+        [TestCase(3098, Utf8String)]
+        [TestCase(3099, Utf8String)]
+        public void ReadStringMidChunk(int chunkSize, string str)
         {
             // Offsets 2538 and 2539 are in the middle of the "DUMMYUTF16" string.
             // We need to ensure that if a string is caught between chunks it isn't lost.
@@ -105,7 +108,7 @@ namespace StringExtractLib.Tests
 
             var strings = reader.ReadAll();
 
-            Assert.IsTrue(strings.Contains(Utf16String));
+            Assert.IsTrue(strings.Contains(str));
         }
 
         [Test]

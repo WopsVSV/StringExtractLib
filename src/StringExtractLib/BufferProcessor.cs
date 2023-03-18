@@ -22,10 +22,12 @@ namespace StringExtractLib
     {
         private StringReaderOptions _options;
         private bool _singleChunk;
+        private int _maxLength;
 
         public BufferProcessor(StringReaderOptions options, bool singleChunk = true)
         {
             _options = options;
+            _maxLength = options.MaximumLength.HasValue ? options.MaximumLength.Value : int.MaxValue;
             _singleChunk = singleChunk;
         }
 
@@ -68,23 +70,18 @@ namespace StringExtractLib
         {
             int i = 0;
             chunkRemainder = null;
-            StringBuilder builder = new StringBuilder();
 
-            if (ReadableAsciiTable.Table[buffer[offset]])
+            if (Table[buffer[offset]])
             {
                 if (buffer[offset + 1] == 0x00)
                 {
                     while (offset + i + 1 < bufferSize &&
-                            ReadableAsciiTable.Table[buffer[offset + i]] &&
+                            Table[buffer[offset + i]] &&
                             buffer[offset + i + 1] == 0)
                     {
-                        if (_options.MaximumLength.HasValue)
-                        {
-                            if (i / 2 + 1 > _options.MaximumLength)
-                                break;
-                        }
+                        if (i / 2 + 1 > _maxLength)
+                            break;
 
-                        builder.Append((char)buffer[offset + i]);
                         i += 2;
                     }
 
@@ -97,7 +94,7 @@ namespace StringExtractLib
                         return 0;
                     }
 
-                    outputString = builder.ToString();
+                    outputString = Encoding.Unicode.GetString(buffer, offset, i);
                     stringSize = i / 2;
                     return i;
                 }
@@ -105,21 +102,50 @@ namespace StringExtractLib
                 {
                     i = offset;
 
-                    while (i < bufferSize && ReadableAsciiTable.Table[buffer[i]])
+                    while (i < bufferSize && Table[buffer[i]])
                         i++;
+
+                    if (!_singleChunk && offset + i + 1 >= bufferSize)
+                    {
+                        chunkRemainder = new byte[buffer.Length - offset];
+                        Buffer.BlockCopy(buffer, offset, chunkRemainder, 0, buffer.Length - offset);
+
+                        stringSize = 0;
+                        return 0;
+                    }
 
                     stringSize = i - offset;
 
-                    if (_options.MaximumLength.HasValue && stringSize > _options.MaximumLength.Value)
-                        stringSize = _options.MaximumLength.Value;
+                    if (stringSize > _maxLength)
+                        stringSize = _maxLength;
 
                     outputString = Encoding.ASCII.GetString(buffer, offset, stringSize);
                     return stringSize;
                 }
+
             }
 
             stringSize = 0;
             return 0;
         }
+
+        internal static readonly bool[] Table =
+                /*          0     1     2     3        4     5     6     7        8     9     A     B        C     D     E     F     */
+                /* 0x00 */ {false,false,false,false,   false,false,false,false,   false,true ,true ,false,   false,true ,false,false,
+                /* 0x10 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0x20 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,
+                /* 0x30 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,
+                /* 0x40 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,
+                /* 0x50 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,
+                /* 0x60 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,
+                /* 0x70 */  true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,true ,   true ,true ,true ,false,
+                /* 0x80 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0x90 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xA0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xB0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xC0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xD0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xE0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false,
+                /* 0xF0 */  false,false,false,false,   false,false,false,false,   false,false,false,false,   false,false,false,false};
     }
 }
