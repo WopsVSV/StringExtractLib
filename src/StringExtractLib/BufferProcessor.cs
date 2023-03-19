@@ -100,9 +100,8 @@ namespace StringExtractLib
                 }
                 else
                 {
-                    i = offset;
-
-                    while (i < bufferSize && Table[buffer[i]])
+                    
+                    while (offset + i < bufferSize && Table[buffer[offset + i]])
                         i++;
 
                     if (!_singleChunk && offset + i + 1 >= bufferSize)
@@ -114,7 +113,7 @@ namespace StringExtractLib
                         return 0;
                     }
 
-                    stringSize = i - offset;
+                    stringSize = i;
 
                     if (stringSize > _maxLength)
                         stringSize = _maxLength;

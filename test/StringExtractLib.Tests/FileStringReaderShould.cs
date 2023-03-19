@@ -100,6 +100,7 @@ namespace StringExtractLib.Tests
         public void ReadStringMidChunk(int chunkSize, string str)
         {
             // Offsets 2538 and 2539 are in the middle of the "DUMMYUTF16" string.
+            // Offsets 3098 and 3099 are in the middle of the "DUMMYUTF8" string.
             // We need to ensure that if a string is caught between chunks it isn't lost.
 
             var reader = new FileStringReader(
