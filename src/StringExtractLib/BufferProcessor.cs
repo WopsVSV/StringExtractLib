@@ -23,35 +23,36 @@ namespace StringExtractLib
         private StringReaderOptions _options;
         private bool _singleChunk;
         private int _maxLength;
+        private int _minLength;
 
         public BufferProcessor(StringReaderOptions options, bool singleChunk = true)
         {
             _options = options;
             _maxLength = options.MaximumLength.HasValue ? options.MaximumLength.Value : int.MaxValue;
+            _minLength = options.MinimumLength;
             _singleChunk = singleChunk;
         }
 
         public ProcessedBufferResult ProcessBuffer(byte[] buffer, int bufferSize)
         {
             int offset = 0;
-            int stringSize = 0;
+            bool isUtf16 = false;
             var strings = new List<string>();
+            var outputString = string.Empty;
 
             while (offset + _options.MinimumLength < bufferSize)
             {
-                var outputString = string.Empty;
-                int stringDiskSpace = ProcessString(buffer, bufferSize, offset, ref stringSize, ref outputString, out var chunkRemainder);
+                var processed = ProcessString(buffer, bufferSize, offset, ref isUtf16, ref outputString, out var chunkRemainder);
 
                 if (chunkRemainder?.Length > 0)
                 {
                     return new ProcessedBufferResult(strings, chunkRemainder);
                 }
 
-                if (stringSize >= _options.MinimumLength)
+                if (processed)
                 {
-                    offset += stringDiskSpace;
+                    offset += isUtf16 ? outputString.Length * 2 : outputString.Length;
 
-                    bool isUtf16 = stringDiskSpace > stringSize;
                     if (_options.SearchedStringType == StringType.Utf8 && isUtf16)
                         continue;
                     if (_options.SearchedStringType == StringType.Utf16 && !isUtf16)
@@ -66,7 +67,7 @@ namespace StringExtractLib
             return new ProcessedBufferResult(strings);
         }
 
-        private int ProcessString(byte[] buffer, int bufferSize, int offset, ref int stringSize, ref string outputString, out byte[]? chunkRemainder)
+        private bool ProcessString(byte[] buffer, int bufferSize, int offset, ref bool isUtf16, ref string outputString, out byte[]? chunkRemainder)
         {
             int i = 0;
             chunkRemainder = null;
@@ -79,53 +80,41 @@ namespace StringExtractLib
                             Table[buffer[offset + i]] &&
                             buffer[offset + i + 1] == 0)
                     {
-                        if (i / 2 + 1 > _maxLength)
-                            break;
 
                         i += 2;
                     }
 
-                    if (!_singleChunk && offset + i + 1 >= bufferSize)
-                    {
-                        chunkRemainder = new byte[buffer.Length - offset];
-                        Buffer.BlockCopy(buffer, offset, chunkRemainder, 0, buffer.Length - offset);
-
-                        stringSize = 0;
-                        return 0;
-                    }
-
-                    outputString = Encoding.Unicode.GetString(buffer, offset, i);
-                    stringSize = i / 2;
-                    return i;
+                    isUtf16 = true;
                 }
                 else
                 {
-                    
                     while (offset + i < bufferSize && Table[buffer[offset + i]])
                         i++;
 
-                    if (!_singleChunk && offset + i + 1 >= bufferSize)
-                    {
-                        chunkRemainder = new byte[buffer.Length - offset];
-                        Buffer.BlockCopy(buffer, offset, chunkRemainder, 0, buffer.Length - offset);
-
-                        stringSize = 0;
-                        return 0;
-                    }
-
-                    stringSize = i;
-
-                    if (stringSize > _maxLength)
-                        stringSize = _maxLength;
-
-                    outputString = Encoding.ASCII.GetString(buffer, offset, stringSize);
-                    return stringSize;
+                    isUtf16 = false;
                 }
 
+                if (!_singleChunk && offset + i + 1 >= bufferSize)
+                {
+                    chunkRemainder = new byte[buffer.Length - offset];
+                    Buffer.BlockCopy(buffer, offset, chunkRemainder, 0, buffer.Length - offset);
+
+                    return false;
+                }
+
+                var len = isUtf16 ? i / 2 : i;
+                if (len < _minLength)
+                    return false;
+                if (len > _maxLength)
+                    return false;
+
+                outputString = isUtf16
+                    ? Encoding.Unicode.GetString(buffer, offset, i)
+                    : Encoding.ASCII.GetString(buffer, offset, i);
+                return true;
             }
 
-            stringSize = 0;
-            return 0;
+            return false;
         }
 
         internal static readonly bool[] Table =
