@@ -121,7 +121,7 @@ namespace StringExtractLib.Tests
         {
             var reader = new FileStringReader(
               DummyFile,
-              new FileStringReaderOptions(minimumSize: minimumSize));
+              new FileStringReaderOptions(minimumLength: minimumSize));
 
             var strings = reader.ReadAll();
 
@@ -137,7 +137,7 @@ namespace StringExtractLib.Tests
         {
             var reader = new FileStringReader(
               DummyFile,
-              new FileStringReaderOptions(maximumSize: maximumSize));
+              new FileStringReaderOptions(maximumLength: maximumSize));
 
             var strings = reader.ReadAll();
 

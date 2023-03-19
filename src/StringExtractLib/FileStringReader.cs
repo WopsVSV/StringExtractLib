@@ -3,29 +3,59 @@ using System.Collections.Generic;
 
 namespace StringExtractLib
 {
+    /// <summary>
+    /// An <see cref="IStringReader"/> implementation used to extract strings from a file.
+    /// </summary>
     public class FileStringReader : IStringReader
     {
+        /// <summary>
+        /// The path of the target file to be extracted from.
+        /// </summary>
         public string Path { get; private set; }
 
+        /// <summary>
+        /// The extraction options which the reader will follow.
+        /// </summary>
         public FileStringReaderOptions Options { get; private set; }
 
+        /// <summary>
+        /// Creates a new <see cref="FileStringReader"/> for a given file
+        /// using default string reader options.
+        /// </summary>
+        /// <param name="path">The file system path of the target file.</param>
         public FileStringReader(string path)
         {
             Options = new FileStringReaderOptions();
             Path = path;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="FileStringReader"/> for a given file
+        /// using specific string reader options.
+        /// </summary>
+        /// <param name="path">The file system path of the target file.</param>
+        /// <param name="options">The file string reader options.</param>
         public FileStringReader(string path, FileStringReaderOptions options)
         {
             Options = options;
             Path = path;
         }
 
+        /// <summary>
+        /// Reads and returns all strings from the target file using the string reader
+        /// options set up while constructing the <see cref="FileStringReader"/>.
+        /// </summary>
+        /// <returns>A list of all strings, filtered by the options.</returns>
         public IList<string> ReadAll()
         {
             return ReadAll(Options);
         }
 
+        /// <summary>
+        /// Reads and returns all strings from the target file using the string reader
+        /// options passed as a parameter.
+        /// </summary>
+        /// <returns>A list of all strings, filtered by the options.</returns>
         public IList<string> ReadAll(StringReaderOptions options)
         {
             if (options == null)
