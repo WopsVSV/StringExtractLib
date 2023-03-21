@@ -32,13 +32,25 @@ namespace StringExtractLib
 
         /// <summary>
         /// Creates a new <see cref="FileStringReader"/> for a given file
-        /// using specific string reader options.
+        /// using specific file string reader options.
         /// </summary>
         /// <param name="path">The file system path of the target file.</param>
         /// <param name="options">The file string reader options.</param>
         public FileStringReader(string path, FileStringReaderOptions options)
         {
             Options = options;
+            Path = path;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="FileStringReader"/> for a given file
+        /// using specific string reader options.
+        /// </summary>
+        /// <param name="path">The file system path of the target file.</param>
+        /// <param name="options">The string reader options.</param>
+        public FileStringReader(string path, StringReaderOptions options)
+        {
+            Options = new FileStringReaderOptions(options);
             Path = path;
         }
 

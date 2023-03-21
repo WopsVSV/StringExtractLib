@@ -173,13 +173,15 @@ namespace StringExtractLib.Tests
         public async Task ReadStringsAsynchronously()
         {
             var options = new StringReaderOptions(minimumLength: 6, stringType: StringType.Utf8);
-            var reader = new FileStringReader(DummyFile);
+            var reader = new FileStringReader(DummyFile, options);
 
             var strings = await reader.ReadAllAsync(options);
+            var strings2 = await reader.ReadAllAsync();
 
             Assert.IsTrue(strings.Contains(Utf8String));
             Assert.IsFalse(strings.Contains(Utf16String));
             Assert.That(strings.All(s => s.Length >= 6));
+            Assert.AreEqual(strings, strings2);
         }
     }
 }
