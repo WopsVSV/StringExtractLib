@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System;
 using System.Linq;
 
@@ -7,30 +8,19 @@ namespace StringExtractLib
 {
     internal partial class FileStringProcessor
     {
-        private readonly BufferProcessor _bufferProcessor;
-        private readonly FileStringReaderOptions _options;
-        private readonly string _path;
-
-        internal FileStringProcessor(string path, FileStringReaderOptions options)
-        {
-            _path = path;
-            _options = options;
-            _bufferProcessor = new BufferProcessor(options, !options.ChunkSize.HasValue);
-        }
-
-        internal IList<string> ReadAll()
+        internal async Task<IList<string>> ReadAllAsync()
         {
             using (var stream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.None))
             {
-                return ParseStream(stream);
+                return await ParseStreamAsync(stream);
             }
         }
 
-        private IList<string> ParseStream(FileStream stream)
+        private async Task<IList<string>> ParseStreamAsync(FileStream stream)
         {
             if (_options.ChunkSize.HasValue)
             {
-                return ProcessChunkedStream(stream, _options.ChunkSize.Value);
+                return await ProcessChunkedStreamAsync(stream, _options.ChunkSize.Value);
             }
             else
             {
@@ -39,20 +29,20 @@ namespace StringExtractLib
                     throw new InvalidOperationException("Unable to read file without chunking due to memory limitations.");
                 }
 
-                return ProcessStream(stream);
+                return await ProcessStreamAsync(stream);
             }
         }
 
-        private IList<string> ProcessStream(FileStream stream)
+        private async Task<IList<string>> ProcessStreamAsync(FileStream stream)
         {
             var length = (int)stream.Length;
             byte[] buffer = new byte[length];
-            stream.Read(buffer, 0, length);
+            await stream.ReadAsync(buffer, 0, length);
 
             return _bufferProcessor.ProcessBuffer(buffer, length).Strings;
         }
 
-        private IList<string> ProcessChunkedStream(FileStream stream, int chunkSize)
+        private async Task<IList<string>> ProcessChunkedStreamAsync(FileStream stream, int chunkSize)
         {
             var strings = new List<string>();
             byte[] buffer = new byte[chunkSize];
@@ -62,7 +52,7 @@ namespace StringExtractLib
 
             do
             {
-                bufferSize = stream.Read(buffer, 0, chunkSize);
+                bufferSize = await stream.ReadAsync(buffer, 0, chunkSize);
 
                 if (bufferSize > 0)
                 {
@@ -79,6 +69,6 @@ namespace StringExtractLib
             while (bufferSize == chunkSize);
 
             return strings;
-        } 
+        }
     }
 }

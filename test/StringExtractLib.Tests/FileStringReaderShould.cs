@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StringExtractLib.Tests
 {
@@ -166,6 +167,19 @@ namespace StringExtractLib.Tests
 
             if(maximumSize.HasValue)
                 Assert.That(strings.All(s => s.Length <= maximumSize));
+        }
+
+        [Test]
+        public async Task ReadStringsAsynchronously()
+        {
+            var options = new StringReaderOptions(minimumLength: 6, stringType: StringType.Utf8);
+            var reader = new FileStringReader(DummyFile);
+
+            var strings = await reader.ReadAllAsync(options);
+
+            Assert.IsTrue(strings.Contains(Utf8String));
+            Assert.IsFalse(strings.Contains(Utf16String));
+            Assert.That(strings.All(s => s.Length >= 6));
         }
     }
 }
