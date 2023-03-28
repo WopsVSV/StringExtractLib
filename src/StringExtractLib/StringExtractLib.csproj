@@ -6,6 +6,10 @@
 	<LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>StringExtractLib</Title>
+    <RepositoryUrl>https://github.com/WopsVSV/StringExtractLib</RepositoryUrl>
+    <Description>A .NET library to extract strings from different data sources.</Description>
   </PropertyGroup>
 
   <ItemGroup>
