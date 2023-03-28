@@ -10,6 +10,8 @@
     <Title>StringExtractLib</Title>
     <RepositoryUrl>https://github.com/WopsVSV/StringExtractLib</RepositoryUrl>
     <Description>A .NET library to extract strings from different data sources.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>csharp;dotnet;extractor;strings;reader</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
